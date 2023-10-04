@@ -1,0 +1,120 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Serialization;
+class Phonebook
+{
+    static Dictionary<string, string> contacts = new Dictionary<string, string>();
+
+    static void Main()
+    {
+        Boolean runProgram = true;
+        while (runProgram)
+        {
+            Console.WriteLine("Phonebook Menu:");
+            Console.WriteLine("Add Contact");
+            Console.WriteLine("Search Contact");
+            Console.WriteLine("Delete Contact");
+            Console.WriteLine("Display the whole phonebook");
+            Console.WriteLine("Exit");
+            Console.Write("Enter your choice: ");
+
+            int choice;
+            if (int.TryParse(Console.ReadLine(), out choice))
+            {
+                if (choice == 1)
+                {
+                    addContact();
+                }
+                if (choice == 2)
+                {
+                    SearchContact();
+                }
+                if (choice == 3)
+                {
+
+                    DeleteContact();
+                }
+                if (choice == 4)
+                {
+                    Display();
+                }
+                if (choice == 5)
+                {
+                    runProgram = false;
+                }
+
+                if (choice > 5)
+                {
+                    Console.WriteLine("Enter a valid choice number");
+
+                }
+
+            }
+
+        }
+    }
+
+    public static void addContact()
+    {
+        Console.Write("Enter the name of the contact: ");
+        string name = Console.ReadLine();
+        Console.Write("Enter the phone number: ");
+        string phoneNumber = Console.ReadLine();
+
+        if (!contacts.ContainsKey(name))
+        {
+            contacts[name] = phoneNumber;
+            Console.WriteLine("Contact added successfully.");
+        }
+        else
+        {
+            Console.WriteLine("Contact already exists. Modify the contact using the update option.");
+        }
+    }
+
+    public static void SearchContact()
+    {
+        Console.Write("Enter a name to search: ");
+        string name = Console.ReadLine();
+
+        if (contacts.ContainsKey(name))
+        {
+            Console.WriteLine($"Name: {name}, Phone Number: {contacts[name]}");
+        }
+        else
+        {
+            Console.WriteLine("Contact not found.");
+        }
+
+    }
+
+    public static void DeleteContact()
+    {
+        Console.Write("Enter the name to delete: ");
+        string name = Console.ReadLine();
+
+        if (contacts.ContainsKey(name))
+        {
+            contacts.Remove(name);
+            Console.WriteLine("Contact deleted successfully.");
+        }
+        else
+        {
+            Console.WriteLine("Contact not found.");
+        }
+    }
+
+    public static void Display()
+    {
+        Console.WriteLine();
+
+        Console.WriteLine("Phonebook");
+        Console.WriteLine();
+        foreach (var kvp in contacts)
+        {
+
+            Console.WriteLine("Name: " + kvp.Key + " Number: " + kvp.Value);
+        }
+    }
+}
