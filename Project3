@@ -1,0 +1,139 @@
+using System;
+using System.Collections.Generic;
+
+public class School
+{
+    private Dictionary<string, Student> students = new Dictionary<string, Student>();
+    private Dictionary<string, Course> courses = new Dictionary<string, Course>();
+
+    public void AddStudent(string studentId, string name, int age)
+    {
+        students[studentId] = new Student(name, age);
+    }
+
+    public void AddCourse(string courseId, string courseName)
+    {
+        courses[courseId] = new Course(courseName);
+    }
+
+    public void EnrollStudentInCourse(string studentId, string courseId)
+    {
+        if (students.TryGetValue(studentId, out Student student) && courses.ContainsKey(courseId))
+            student.EnrollInCourse(courses[courseId]);
+        else
+            Console.WriteLine("Student or course not found.");
+    }
+
+    public void DisplayStudentInfo(string studentId)
+    {
+        if (students.TryGetValue(studentId, out Student student))
+            student.DisplayInfo();
+        else
+            Console.WriteLine("Student not found.");
+    }
+
+    public void DisplayCourseInfo(string courseId)
+    {
+        if (courses.TryGetValue(courseId, out Course course))
+            course.DisplayInfo();
+        else
+            Console.WriteLine("Course not found.");
+    }
+}
+
+public class Student
+{
+    public string Name { get; }
+    public int Age { get; }
+    private List<Course> enrolledCourses = new List<Course>();
+
+    public Student(string name, int age)
+    {
+        Name = name;
+        Age = age;
+    }
+
+    public void EnrollInCourse(Course course)
+    {
+        enrolledCourses.Add(course);
+    }
+
+    public void DisplayInfo()
+    {
+        Console.WriteLine($"Student Name: {Name}, Age: {Age}");
+        Console.WriteLine("Enrolled Courses:");
+        foreach (var course in enrolledCourses)
+            Console.WriteLine(course.CourseName);
+    }
+}
+
+public class Course
+{
+    public string CourseName { get; }
+
+    public Course(string courseName)
+    {
+        CourseName = courseName;
+    }
+
+    public void DisplayInfo()
+    {
+        Console.WriteLine($"Course Name: {CourseName}");
+    }
+}
+
+public class Cache<TKey, TValue>
+{
+    private readonly Dictionary<TKey, TValue> cache = new Dictionary<TKey, TValue>();
+    private readonly Func<TKey, TValue> expensiveFunction;
+
+    public Cache(Func<TKey, TValue> function)
+    {
+        expensiveFunction = function;
+    }
+
+    public TValue Get(TKey key)
+    {
+        if (!cache.TryGetValue(key, out TValue result))
+        {
+            result = expensiveFunction(key);
+            cache[key] = result;
+        }
+        return result;
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        School school = new School();
+        school.AddStudent("S1", "Alice", 20);
+        school.AddStudent("S2", "Bob", 22);
+        school.AddCourse("C1", "Math");
+        school.AddCourse("C2", "History");
+        school.AddCourse("C3", "Science");
+        school.EnrollStudentInCourse("S1", "C1");
+        school.EnrollStudentInCourse("S1", "C2");
+        school.EnrollStudentInCourse("S2", "C3");
+
+        school.DisplayStudentInfo("S1");
+        school.DisplayCourseInfo("C2");
+
+        Cache<int, long> fibonacciCache = new Cache<int, long>(CalculateFibonacci);
+        long result1 = fibonacciCache.Get(10);
+        long result2 = fibonacciCache.Get(20);
+        long result3 = fibonacciCache.Get(10);
+
+        Console.WriteLine("Result 1: " + result1);
+        Console.WriteLine("Result 2: " + result2);
+        Console.WriteLine("Result 3: " + result3);
+    }
+
+    static long CalculateFibonacci(int n)
+    {
+        if (n <= 1)
+            return n;
+        return CalculateFibonacci(n - 1) + CalculateFibonacci(n - 2);
+    }
+}
